@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Check Status - Gram Sahayak</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔍 Track Your Application</h1>
+      <p>Enter your mobile number to check status</p>
+    </header>
+
+    <form id="statusForm" class="form-card">
+      <label for="mobile">Mobile Number</label>
+      <input type="tel" id="mobile" name="mobile" required />
+
+      <button type="submit" class="btn">Check Status</button>
+      <div id="result" class="msg"></div>
+    </form>
+
+    <footer>
+      <p>Gram Sahayak Portal • Status Tracker</p>
+    </footer>
+  </div>
+
+  <script>
+    const form = document.getElementById("statusForm");
+    const resultDiv = document.getElementById("result");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const mobile = document.getElementById("mobile").value;
+
+      resultDiv.innerHTML = "🔄 Checking...";
+
+      try {
+        const res = await fetch(`https://sheetdb.io/api/v1/nc0zvxma5fyow/search?Mobile=${mobile}`);
+        const data = await res.json();
+
+        if (data.length === 0) {
+          resultDiv.innerHTML = "❌ No application found for this number.";
+        } else {
+          const user = data[0];
+          resultDiv.innerHTML = `
+            <strong>Name:</strong> ${user.name}<br/>
+            <strong>Document:</strong> ${user.document}<br/>
+            <strong>Status:</strong> <span style="color:${
+              user.status.toLowerCase() === "ready" ? "green" : "orange"
+            }">${user.status}</span>
+          `;
+        }
+      } catch (err) {
+        resultDiv.innerHTML = "⚠️ Error fetching status. Try again.";
+      }
+    });
+  </script>
+</body>
+</html>
